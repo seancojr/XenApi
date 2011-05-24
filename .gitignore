@@ -21,3 +21,6 @@
 /library/Sabre
 /library/XenForo
 /library/Zend
+/.htaccess
+/library/config.php
+/.idea/
