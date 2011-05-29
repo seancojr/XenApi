@@ -90,6 +90,7 @@ abstract class XenApi_ControllerApi_Abstract extends XenForo_Controller
 	 */
 	protected function _preDispatchType($action)
 	{
+		$this->_assertBoardActive($action);
 		$this->_handleParams();
 	}
 
@@ -208,6 +209,21 @@ abstract class XenApi_ControllerApi_Abstract extends XenForo_Controller
 		}
 
 		$this->_params = $cleanedParams;
+	}
+
+	/**
+	 * Checks that the board is currently active (and can be viewed by the visitor)
+	 * or throws an exception.
+	 *
+	 * @param string $action
+	 */
+	protected function _assertBoardActive($action)
+	{
+		$options = XenForo_Application::get('options');
+		if (!$options->boardActive && !XenForo_Visitor::getInstance()->get('is_admin'))
+		{
+			throw $this->responseException($this->responseApiError($options->boardInactiveMessage, 'forum_closed'), 503);
+		}
 	}
 
 	/**
