@@ -10,6 +10,13 @@ abstract class XenApi_ControllerApi_Abstract extends XenForo_Controller
 	private $_params = array();
 
 	/**
+	 * Warnings to be outputted
+	 *
+	 * @var array
+	 */
+	private $_warnings = array();
+
+	/**
 	 * Parameters required for the request
 	 *
 	 * @return void
@@ -35,6 +42,11 @@ abstract class XenApi_ControllerApi_Abstract extends XenForo_Controller
 	 */
 	public function responseData(array $data)
 	{
+		if (count($this->_warnings))
+		{
+			$data = array_merge(array('warnings' => array_values($this->_warnings)), $data);
+		}
+
 		$controllerResponse = new XenApi_ControllerResponse_Data();
 		$controllerResponse->data = $data;
 
@@ -159,7 +171,9 @@ abstract class XenApi_ControllerApi_Abstract extends XenForo_Controller
 					{
 						if ($allowMultiple)
 						{
-							// TODO: Warnings
+							$s = count($unknown) > 1 ? 's' : '';
+							$vals = implode(', ', $unknown);
+							$this->_addWarning( "Unrecognized value$s for parameter '$paramName': $vals" );
 						}
 						else
 						{
@@ -199,5 +213,19 @@ abstract class XenApi_ControllerApi_Abstract extends XenForo_Controller
 		}
 
 		return $target;
+	}
+
+	/**
+	 * Adds a warning to be displayed during output
+	 *
+	 * @param  $warning
+	 * @return void
+	 */
+	protected function _addWarning($warning)
+	{
+		if (!in_array($warning, $this->_warnings))
+		{
+			$this->_warnings[] = $warning;
+		}
 	}
 }
