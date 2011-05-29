@@ -4,7 +4,7 @@ class XenApi_ControllerApi_Forum extends XenApi_ControllerApi_Abstract
 {
 	public function actionIndex()
 	{
-		$parentId = $this->getParam('parent');
+		$parentId = $this->getParam('node_id');
 
 		if ($parentId == 0)
 		{
@@ -12,11 +12,28 @@ class XenApi_ControllerApi_Forum extends XenApi_ControllerApi_Abstract
 		}
 		else
 		{
-			// TODO: Node grabbing etc
+			/** @var $ftpHelper XenForo_ControllerHelper_ForumThreadPost */
+			$parent = $this->_getNodeModel()->getNodeById($parentId);
+
+			if (empty($parent['node_id'])
+				|| ($parent['node_type_id'] != 'Category' && $parent['node_type_id'] != 'Forum'))
+			{
+				throw $this->responseException(
+					$this->responseApiError('Invalid node_id given', 'invalid_node_id')
+				);
+			}
 		}
 
 		$nodes = $this->_getNodeModel()->getNodeDataForListDisplay($parent, 0);
-		$data = $this->_buildForumList($nodes['nodesGrouped'], $parentId);
+
+		if (!empty($nodes['nodesGrouped']))
+		{
+			$data = $this->_buildForumList($nodes['nodesGrouped'], $parentId);
+		}
+		else
+		{
+			$data = array();
+		}
 
 		//print_r($nodes);
 		return $this->responseData($data);
@@ -75,7 +92,7 @@ class XenApi_ControllerApi_Forum extends XenApi_ControllerApi_Abstract
 	protected function _getParams()
 	{
 		return array(
-			'parent' => XenForo_Input::UINT
+			'node_id' => XenForo_Input::UINT
 		);
 	}
 }
