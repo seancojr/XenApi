@@ -129,7 +129,55 @@ abstract class XenApi_ControllerApi_Abstract extends XenForo_Controller
 			}
 		}
 
-		$this->_params = $this->_input->filter($params);
+		$cleanedParams = $this->_input->filter($params);
+
+		foreach ($params AS $paramName => $paramOptions)
+		{
+			if (!is_array($paramOptions))
+			{
+				continue;
+			}
+
+			if (isset($paramOptions['multi']) || isset($paramOptions['values']))
+			{
+				$values = explode('|', $cleanedParams[$paramName]);
+				$allowedValues = isset($paramOptions['values']) ? $paramOptions['values'] : null;
+				$allowMultiple = isset($paramOptions['multi']) ? $paramOptions['multi'] : false;
+
+				if (!$allowMultiple && count($values) != 1)
+				{
+					$possibleValues = is_array($allowedValues) ? "of '" . implode("', '", $allowedValues) . "'" : '';
+					throw $this->responseException(
+						$this->responseError("Only one $possibleValues is allowed for parameter '$paramName'")
+					);
+				}
+
+				if (is_array($allowedValues))
+				{
+					$unknown = array_diff($values, $allowedValues);
+					if (count($unknown))
+					{
+						if ($allowMultiple)
+						{
+							// TODO: Warnings
+						}
+						else
+						{
+							throw $this->responseException(
+								$this->responseError("Unrecognized value for parameter '$paramName': {$values[0]}")
+							);
+						}
+
+						// Remove the bad entries
+						$values = array_intersect($values, $allowedValues);
+					}
+				}
+
+				$cleanedParams[$paramName] = ($allowMultiple) ? $values : $values[0];
+			}
+		}
+
+		$this->_params = $cleanedParams;
 	}
 
 	/**
