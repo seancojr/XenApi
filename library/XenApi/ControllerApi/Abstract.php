@@ -94,6 +94,14 @@ abstract class XenApi_ControllerApi_Abstract extends XenForo_Controller
 	}
 
 	/**
+	 * Disable sessions in the API
+	 *
+	 * @param  $action
+	 * @return void
+	 */
+	protected function _setupSession($action) {}
+
+	/**
 	 * Returns a cleaned API parameter
 	 *
 	 * @param  $paramName
