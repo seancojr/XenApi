@@ -169,46 +169,60 @@ abstract class XenApi_ControllerApi_Abstract extends XenForo_Controller
 
 			if (isset($paramOptions['multi']) || isset($paramOptions['values']))
 			{
-				$values = explode('|', $cleanedParams[$paramName]);
-				$allowedValues = isset($paramOptions['values']) ? $paramOptions['values'] : null;
-				$allowMultiple = isset($paramOptions['multi']) ? $paramOptions['multi'] : false;
-
-				if (!$allowMultiple && count($values) != 1)
-				{
-					$possibleValues = is_array($allowedValues) ? "of '" . implode("', '", $allowedValues) . "'" : '';
-					throw $this->responseException(
-						$this->responseError("Only one $possibleValues is allowed for parameter '$paramName'")
-					);
-				}
-
-				if (is_array($allowedValues))
-				{
-					$unknown = array_diff($values, $allowedValues);
-					if (count($unknown))
-					{
-						if ($allowMultiple)
-						{
-							$s = count($unknown) > 1 ? 's' : '';
-							$vals = implode(', ', $unknown);
-							$this->_addWarning( "Unrecognized value$s for parameter '$paramName': $vals" );
-						}
-						else
-						{
-							throw $this->responseException(
-								$this->responseError("Unrecognized value for parameter '$paramName': {$values[0]}")
-							);
-						}
-
-						// Remove the bad entries
-						$values = array_intersect($values, $allowedValues);
-					}
-				}
-
-				$cleanedParams[$paramName] = ($allowMultiple) ? $values : $values[0];
+				$cleanedParams[$paramName] = $this->_handleMultiParam($paramName, $paramOptions, $cleanedParams);
 			}
 		}
 
 		$this->_params = $cleanedParams;
+	}
+
+	/**
+	 * Returns an array of values given in 'a|b|c' notation
+	 *
+	 * @throws XenForo_ControllerResponse_Exception
+	 * @param  $paramName
+	 * @param  $paramOptions
+	 * @param  $cleanedParams
+	 * @return array
+	 */
+	protected function _handleMultiParam($paramName, $paramOptions, $cleanedParams)
+	{
+		$values = explode('|', $cleanedParams[$paramName]);
+		$allowedValues = isset($paramOptions['values']) ? $paramOptions['values'] : null;
+		$allowMultiple = isset($paramOptions['multi']) ? $paramOptions['multi'] : false;
+
+		if (!$allowMultiple && count($values) != 1)
+		{
+			$possibleValues = is_array($allowedValues) ? "of '" . implode("', '", $allowedValues) . "'" : '';
+			throw $this->responseException(
+				$this->responseError("Only one $possibleValues is allowed for parameter '$paramName'")
+			);
+		}
+
+		if (is_array($allowedValues))
+		{
+			$unknown = array_diff($values, $allowedValues);
+			if (count($unknown))
+			{
+				if ($allowMultiple)
+				{
+					$s = count($unknown) > 1 ? 's' : '';
+					$vals = implode(', ', $unknown);
+					$this->_addWarning( "Unrecognized value$s for parameter '$paramName': $vals" );
+				}
+				else
+				{
+					throw $this->responseException(
+						$this->responseError("Unrecognized value for parameter '$paramName': {$values[0]}")
+					);
+				}
+
+				// Remove the bad entries
+				$values = array_intersect($values, $allowedValues);
+			}
+		}
+
+		return ($allowMultiple) ? $values : $values[0];
 	}
 
 	/**
