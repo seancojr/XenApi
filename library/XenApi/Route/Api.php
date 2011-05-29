@@ -6,7 +6,8 @@
 class XenApi_Route_Api implements XenForo_Route_Interface
 {
 	private static $_modules = array(
-		'forums' => 'Forums'
+		'forums' => 'Forums',
+		'info' => 'Info'
 	);
 
 	/**
