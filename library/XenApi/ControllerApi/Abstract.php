@@ -125,6 +125,7 @@ abstract class XenApi_ControllerApi_Abstract extends XenForo_Controller
 	 */
 	private function _handleParams()
 	{
+		$cleanedParams = array();
 		$params = $this->_getParams();
 
 		if ($params === false)
@@ -134,6 +135,13 @@ abstract class XenApi_ControllerApi_Abstract extends XenForo_Controller
 
 		foreach ($params AS $paramName => $paramOptions)
 		{
+			if ($paramOptions === false)
+			{
+				$cleanedParams[$paramName] = ($this->_request->getParam($paramName) !== null);
+				unset($params[$paramName]);
+				continue;
+			}
+
 			if (!is_array($paramOptions))
 			{
 				continue;
@@ -149,7 +157,7 @@ abstract class XenApi_ControllerApi_Abstract extends XenForo_Controller
 			}
 		}
 
-		$cleanedParams = $this->_input->filter($params);
+		$cleanedParams += $this->_input->filter($params);
 
 		foreach ($params AS $paramName => $paramOptions)
 		{
