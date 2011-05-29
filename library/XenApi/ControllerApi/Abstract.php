@@ -19,7 +19,7 @@ abstract class XenApi_ControllerApi_Abstract extends XenForo_Controller
 	public function responseData(array $data)
 	{
 		$controllerResponse = new XenApi_ControllerResponse_Data();
-		$controllerResponse->params = $data;
+		$controllerResponse->data = $data;
 
 		return $controllerResponse;
 	}
