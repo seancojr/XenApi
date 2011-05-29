@@ -35,8 +35,7 @@ class XenApi_ControllerApi_Forum extends XenApi_ControllerApi_Abstract
 			$data = array();
 		}
 
-		//print_r($nodes);
-		return $this->responseData($data);
+		return $this->responseData(array('forums' => $data));
 	}
 
 	protected function _buildForumList(array $nodesGrouped, $parentId)
@@ -53,9 +52,9 @@ class XenApi_ControllerApi_Forum extends XenApi_ControllerApi_Abstract
 				}
 
 				$nodeData = $this->_cloneData($node, array('node_id', 'title', 'description', 'discussion_count', 'message_count', 'last_post_id', 'last_post_date', 'last_post_user_id', 'last_post_username', 'last_thread_title'));
-				$nodeData['children'] = $this->_buildForumList($nodesGrouped, $node['node_id']);
+				$nodeData['forums'] = $this->_buildForumList($nodesGrouped, $node['node_id']);
 
-				if (!count($nodeData['children']))
+				if (!count($nodeData['forums']))
 				{
 					if ($node['node_type_id'] == 'Category')
 					{
@@ -63,7 +62,7 @@ class XenApi_ControllerApi_Forum extends XenApi_ControllerApi_Abstract
 						continue;
 					}
 
-					unset($nodeData['children']);
+					unset($nodeData['forums']);
 				}
 
 				$nodes[] = $nodeData;
