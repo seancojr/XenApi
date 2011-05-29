@@ -17,6 +17,9 @@ class XenApi_ControllerApi_Info extends XenApi_ControllerApi_Abstract
 				case 'statistics':
 					$data['statistics'] = $this->_getStatistics();
 					break;
+				case 'onlineusers':
+					$data['onlineusers'] = $this->_getOnlineUsers();
+					break;
 			}
 		}
 
@@ -40,7 +43,6 @@ class XenApi_ControllerApi_Info extends XenApi_ControllerApi_Abstract
 
 	protected function _getStatistics()
 	{
-		$info = array();
 		$boardTotals = $this->getModelFromCache('XenForo_Model_DataRegistry')->get('boardTotals');
 		if (!$boardTotals)
 		{
@@ -48,6 +50,37 @@ class XenApi_ControllerApi_Info extends XenApi_ControllerApi_Abstract
 		}
 
 		$info = $this->_cloneData($boardTotals, array('discussions', 'messages', 'users'));
+
+		return $info;
+	}
+
+	protected function _getOnlineUsers()
+	{
+		$visitor = XenForo_Visitor::getInstance();
+
+		$sessionModel = $this->getModelFromCache('XenForo_Model_Session');
+
+		$onlineUsers = $sessionModel->getSessionActivityQuickList(
+			$visitor->toArray(),
+			array('cutOff' => array('>', $sessionModel->getOnlineStatusTimeout())),
+			($visitor['user_id'] ? $visitor->toArray() : null)
+		); //print_r($onlineUsers);
+
+		$info = $this->_cloneData($onlineUsers, array('total', 'members', 'guests'));
+
+		if (!$this->getParam('nouserlist'))
+		{
+			$userList = array();
+
+			// TODO: Visible and followed
+			foreach($onlineUsers['records'] AS $userRecord)
+			{
+				$user = $this->_cloneData($userRecord, array('user_id', 'username', 'last_activity', 'user_group_id'));
+				$userList[] = $user;
+			}
+
+			$info['users'] = $userList;
+		}
 
 		return $info;
 	}
@@ -61,9 +94,11 @@ class XenApi_ControllerApi_Info extends XenApi_ControllerApi_Abstract
 				'multi' => true,
 				'values' => array(
 					'general',
-					'statistics'
+					'statistics',
+					'onlineusers'
 				)
-			)
+			),
+			'nouserlist' => false
 		);
 	}
 }
