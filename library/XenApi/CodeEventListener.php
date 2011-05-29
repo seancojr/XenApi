@@ -9,8 +9,16 @@ class XenApi_CodeEventListener
 	 */
 	private static $_apiRequest = false;
 
+	/**
+	 * Actual API viewrenderer output
+	 *
+	 * @var string
+	 */
 	private static $_realContent = '';
 
+	/**
+	 * Singleton class, no constructor
+	 */
 	private final function __construct() {}
 
 	/**
@@ -76,6 +84,15 @@ class XenApi_CodeEventListener
 		self::$_realContent = $content;
 	}
 
+	/**
+	 * After the fake view is rendered in the FrontController, replace
+	 * the content with our stored content
+	 *
+	 * @static
+	 * @param XenForo_FrontController $fc
+	 * @param  $output
+	 * @return string
+	 */
 	public static function FrontControllerPostView(XenForo_FrontController $fc, &$output)
 	{
 		if (!self::$_apiRequest || self::$_realContent == '') return;

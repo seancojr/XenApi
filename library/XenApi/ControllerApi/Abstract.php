@@ -2,12 +2,16 @@
 
 abstract class XenApi_ControllerApi_Abstract extends XenForo_Controller
 {
+	/**
+	 * Cleaned parameters
+	 *
+	 * @var array
+	 */
 	private $_params = array();
 
 	/**
 	 * Parameters required for the request
 	 *
-	 * @abstract
 	 * @return void
 	 */
 	protected function _getParams()
@@ -53,16 +57,36 @@ abstract class XenApi_ControllerApi_Abstract extends XenForo_Controller
 		return $controllerResponse;
 	}
 
+	/**
+	 * Disable CSRF checking, messes with json output
+	 *
+	 * @param  $action
+	 * @return
+	 */
 	protected function _checkCsrf($action)
 	{
 		return;
 	}
 
+	/**
+	 * Method designed to be overridden by child classes to add pre-dispatch
+	 * behaviors. This differs from {@link _preDispatch()} in that it is designed
+	 * for abstract controller type classes to override. Specific controllers
+	 * should override preDispatch instead.
+	 *
+	 * @param string $action Action that is requested
+	 */
 	protected function _preDispatchType($action)
 	{
 		$this->_handleParams();
 	}
 
+	/**
+	 * Returns a cleaned API parameter
+	 *
+	 * @param  $paramName
+	 * @return array|null
+	 */
 	protected function getParam($paramName)
 	{
 		if (isset($this->_params[$paramName]))
@@ -73,6 +97,12 @@ abstract class XenApi_ControllerApi_Abstract extends XenForo_Controller
 		return null;
 	}
 
+	/**
+	 * Cleans any parameters for use in the request
+	 *
+	 * @throws XenForo_ControllerResponse_Exception
+	 * @return
+	 */
 	private function _handleParams()
 	{
 		$params = $this->_getParams();

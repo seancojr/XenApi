@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * Print_r viewrenderer
+ */
 class XenApi_ViewRenderer_Dbg extends XenApi_ViewRenderer_Abstract
 {
 	/**
@@ -12,6 +15,12 @@ class XenApi_ViewRenderer_Dbg extends XenApi_ViewRenderer_Abstract
 		return 'text/text';
 	}
 
+	/**
+	 * Runs the data through print_r
+	 *
+	 * @param  $data
+	 * @return mixed
+	 */
 	protected function _print($data)
 	{
 		return print_r($data, true);
@@ -41,6 +50,13 @@ class XenApi_ViewRenderer_Dbg extends XenApi_ViewRenderer_Abstract
 		// TODO: Implement renderMessage() method.
 	}
 
+	/**
+	 * Renders any data passed from the controller
+	 *
+	 * @abstract
+	 * @param array $data
+	 * @return void
+	 */
 	public function renderData(array $data)
 	{
 		return $this->_format($this->_print($data));

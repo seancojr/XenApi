@@ -1,7 +1,7 @@
 <?php
 
 /**
- * For tracking purposes
+ * API Style rendering
  */
 abstract class XenApi_ViewRenderer_Abstract extends XenForo_ViewRenderer_Abstract
 {
@@ -16,6 +16,13 @@ abstract class XenApi_ViewRenderer_Abstract extends XenForo_ViewRenderer_Abstrac
 		$this->_isHtml =(substr($responseType, -2, 2) == 'fm');
 	}
 
+	/**
+	 * Applies any formatting before returning the data back to
+	 * the FrontController (really the CEL in our case)
+	 *
+	 * @param  $text
+	 * @return string
+	 */
 	protected function _format($text)
 	{
 		if ($this->_isHtml)
@@ -52,6 +59,11 @@ abstract class XenApi_ViewRenderer_Abstract extends XenForo_ViewRenderer_Abstrac
 		return $text;
 	}
 
+	/**
+	 * Sets up any headers and returns anything to prefix the content with
+	 *
+	 * @return string
+	 */
 	public function init()
 	{
 		$mime = $this->_isHtml ? 'text/html' : $this->_getMimeType();
@@ -78,6 +90,11 @@ ENDHTML;
 		return $content;
 	}
 
+	/**
+	 * Content suffix
+	 *
+	 * @return string
+	 */
 	public function close()
 	{
 		$content = '';
@@ -96,7 +113,7 @@ ENDHTML;
 	}
 
 	/**
-	 * Renders any data
+	 * Renders any data passed from the controller
 	 *
 	 * @abstract
 	 * @param array $data

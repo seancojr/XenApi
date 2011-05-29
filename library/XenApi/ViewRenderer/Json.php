@@ -38,6 +38,13 @@ class XenApi_ViewRenderer_Json extends XenApi_ViewRenderer_Abstract
 		// TODO: Implement renderMessage() method.
 	}
 
+	/**
+	 * Renders any data passed from the controller
+	 *
+	 * @abstract
+	 * @param array $data
+	 * @return void
+	 */
 	public function renderData(array $data)
 	{
 		return $this->_format(
@@ -67,6 +74,9 @@ class XenApi_ViewRenderer_Json extends XenApi_ViewRenderer_Abstract
 		}
 	}
 
+	/**
+	 * Manually loads the JSON service class
+	 */
 	private function _loadJsonService()
 	{
 		if (class_exists('Services_JSON')) return;

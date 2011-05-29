@@ -25,9 +25,7 @@ class XenApi_Dependencies_Api extends XenForo_Dependencies_Abstract
 	 * @return XenForo_Template_Abstract
 	 */
 	public function createTemplateObject($templateName, array $params = array())
-	{
-		// TODO: Implement createTemplateObject() method.
-	}
+	{}
 
 	/**
 	 * Gets the name of the base view class for this type.
@@ -35,9 +33,7 @@ class XenApi_Dependencies_Api extends XenForo_Dependencies_Abstract
 	 * @return string
 	 */
 	public function getBaseViewClassName()
-	{
-		// TODO: Implement getBaseViewClassName() method.
-	}
+	{}
 
 	/**
 	 * Gets the extra container data from template renders.
@@ -45,9 +41,7 @@ class XenApi_Dependencies_Api extends XenForo_Dependencies_Abstract
 	 * @return array
 	 */
 	public function getExtraContainerData()
-	{
-		// TODO: Implement getExtraContainerData() method.
-	}
+	{}
 
 	/**
 	 * Gets the routing information for a not found error
@@ -75,9 +69,7 @@ class XenApi_Dependencies_Api extends XenForo_Dependencies_Abstract
 	 * @param string Template name
 	 */
 	public function preloadTemplate($templateName)
-	{
-		// TODO: Implement preloadTemplate() method.
-	}
+	{}
 
 	public function getViewRenderer(Zend_Controller_Response_Http $response, $responseType, Zend_Controller_Request_Http $request)
 	{
