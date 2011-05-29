@@ -37,6 +37,22 @@ abstract class XenApi_ControllerApi_Abstract extends XenForo_Controller
 		return $controllerResponse;
 	}
 
+	/**
+	 * @param  $error
+	 * @param  $errorCode
+	 * @param int $responseCode
+	 * @return XenApi_ControllerResponse_ApiError
+	 */
+	public function responseApiError($error, $errorCode, $responseCode = 200)
+	{
+		$controllerResponse = new XenApi_ControllerResponse_ApiError();
+		$controllerResponse->errorText = $error;
+		$controllerResponse->errorCode = $errorCode;
+		$controllerResponse->responseCode = $responseCode;
+
+		return $controllerResponse;
+	}
+
 	protected function _checkCsrf($action)
 	{
 		return;

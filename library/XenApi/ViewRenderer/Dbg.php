@@ -2,6 +2,11 @@
 
 class XenApi_ViewRenderer_Dbg extends XenApi_ViewRenderer_Abstract
 {
+	protected function _print($data)
+	{
+		return '<pre>' . print_r($data, true) . '</pre>';
+	}
+
 	/**
 	 * Renders output of an error.
 	 *
@@ -11,7 +16,7 @@ class XenApi_ViewRenderer_Dbg extends XenApi_ViewRenderer_Abstract
 	 */
 	public function renderError($errorText)
 	{
-		return '<pre>' . print_r($errorText, true) . '</pre>';
+		return $this->_print(array('error' => $errorText));
 	}
 
 	/**
@@ -28,6 +33,6 @@ class XenApi_ViewRenderer_Dbg extends XenApi_ViewRenderer_Abstract
 
 	public function renderData(array $data)
 	{
-		return '<pre>' . print_r($data, true) . '</pre>';
+		return $this->_print($data);
 	}
 }

@@ -48,6 +48,17 @@ class XenApi_CodeEventListener
 			$content = $viewRenderer->renderData($controllerResponse->data);
 		}
 
+		if ($controllerResponse instanceof XenApi_ControllerResponse_ApiError)
+		{
+			$errorResponse = array(
+				'error' => array(
+					'code' => $controllerResponse->errorCode,
+					'message' => $controllerResponse->errorText
+				)
+			);
+			$content = $viewRenderer->renderData($errorResponse);
+		}
+
 		self::$_realContent = $content;
 	}
 
