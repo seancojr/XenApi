@@ -84,6 +84,7 @@ class XenApi_Dependencies_Api extends XenForo_Dependencies_Abstract
 		switch ($responseType)
 		{
 			case 'dbg':		return new XenApi_ViewRenderer_Dbg($this, $response, $request);
+            case 'json':    return new XenApi_ViewRenderer_Json($this, $response, $request);
 			default:		return false;
 		}
 
