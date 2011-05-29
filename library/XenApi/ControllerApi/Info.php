@@ -40,9 +40,16 @@ class XenApi_ControllerApi_Info extends XenApi_ControllerApi_Abstract
 
 	protected function _getStatistics()
 	{
-		return array(
-			'foo' => 'bar'
-		);
+		$info = array();
+		$boardTotals = $this->getModelFromCache('XenForo_Model_DataRegistry')->get('boardTotals');
+		if (!$boardTotals)
+		{
+			$boardTotals = $this->getModelFromCache('XenForo_Model_Counters')->rebuildBoardTotalsCounter();
+		}
+
+		$info = $this->_cloneData($boardTotals, array('discussions', 'messages', 'users'));
+
+		return $info;
 	}
 
 	protected function _getParams()
