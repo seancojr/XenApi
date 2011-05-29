@@ -3,6 +3,16 @@
 class XenApi_ViewRenderer_Json extends XenApi_ViewRenderer_Abstract
 {
 	/**
+	 * Returns any special mime types
+	 *
+	 * @return void
+	 */
+	protected function _getMimeType()
+	{
+		return 'application/json';
+	}
+
+	/**
 	 * Renders output of an error.
 	 *
 	 * @param string Text of the error to render
@@ -30,6 +40,8 @@ class XenApi_ViewRenderer_Json extends XenApi_ViewRenderer_Abstract
 
 	public function renderData(array $data)
 	{
-		return XenForo_ViewRenderer_Json::jsonEncodeForOutput($data);
+		return $this->_format(
+			XenForo_ViewRenderer_Json::jsonEncodeForOutput($data)
+		);
 	}
 }

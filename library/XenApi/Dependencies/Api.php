@@ -81,22 +81,17 @@ class XenApi_Dependencies_Api extends XenForo_Dependencies_Abstract
 
 	public function getViewRenderer(Zend_Controller_Response_Http $response, $responseType, Zend_Controller_Request_Http $request)
 	{
+		// TODO: This is repetitive, replace with an array?
 		switch ($responseType)
 		{
-			case 'dbg':		return new XenApi_ViewRenderer_Dbg($this, $response, $request);
-            case 'json':    return new XenApi_ViewRenderer_Json($this, $response, $request);
-			default:		return false;
-		}
-
-		switch ($responseType)
-		{
-			case 'json':      return new XenForo_ViewRenderer_Json($this, $response, $request);
-			case 'json-text': return new XenForo_ViewRenderer_JsonText($this, $response, $request);
-			case 'rss':       return new XenForo_ViewRenderer_Rss($this, $response, $request);
-			case 'css':       return new XenForo_ViewRenderer_Css($this, $response, $request);
-			case 'xml':       return new XenForo_ViewRenderer_Xml($this, $response, $request);
-			case 'raw':       return new XenForo_ViewRenderer_Raw($this, $response, $request);
-			default:          return false;
+			case 'dbg':
+			case 'dbgfm':
+				return new XenApi_ViewRenderer_Dbg($this, $response, $request, $responseType);
+            case 'json':
+			case 'jsonfm':
+				return new XenApi_ViewRenderer_Json($this, $response, $request, $responseType);
+			default:
+				return false;
 		}
 	}
 

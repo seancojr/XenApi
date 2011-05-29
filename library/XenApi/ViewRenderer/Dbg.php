@@ -2,9 +2,19 @@
 
 class XenApi_ViewRenderer_Dbg extends XenApi_ViewRenderer_Abstract
 {
+	/**
+	 * Returns any special mime types
+	 *
+	 * @return void
+	 */
+	protected function _getMimeType()
+	{
+		return 'text/text';
+	}
+
 	protected function _print($data)
 	{
-		return '<pre>' . print_r($data, true) . '</pre>';
+		return print_r($data, true);
 	}
 
 	/**
@@ -33,6 +43,6 @@ class XenApi_ViewRenderer_Dbg extends XenApi_ViewRenderer_Abstract
 
 	public function renderData(array $data)
 	{
-		return $this->_print($data);
+		return $this->_format($this->_print($data));
 	}
 }
