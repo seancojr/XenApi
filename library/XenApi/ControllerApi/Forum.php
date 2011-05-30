@@ -5,6 +5,7 @@ class XenApi_ControllerApi_Forum extends XenApi_ControllerApi_Abstract
 	public function actionIndex()
 	{
 		$parentId = $this->getParam('node_id');
+		$data = array();
 
 		if ($parentId == 0)
 		{
@@ -24,18 +25,96 @@ class XenApi_ControllerApi_Forum extends XenApi_ControllerApi_Abstract
 			}
 		}
 
+		if (!$this->getParam('no_forums'))
+		{
+			$data['forums'] = $this->_getSubforums($parent, $parentId);
+		}
+
+		if (!$this->getParam('no_threads') && $parentId != 0 && $parent['node_type_id'] == 'Forum')
+		{
+			$data += $this->_getThreads($parent, $parentId);
+		}
+
+		return $this->responseData($data);
+	}
+
+	/**
+	 * Returns subforums
+	 *
+	 * @param  $parent
+	 * @param  $parentId
+	 * @return array
+	 */
+	protected function _getSubforums($parent, $parentId)
+	{
 		$nodes = $this->_getNodeModel()->getNodeDataForListDisplay($parent, 0);
 
 		if (!empty($nodes['nodesGrouped']))
 		{
-			$data = $this->_buildForumList($nodes['nodesGrouped'], $parentId);
-		}
-		else
-		{
-			$data = array();
+			return $this->_buildForumList($nodes['nodesGrouped'], $parentId);
 		}
 
-		return $this->responseData(array('forums' => $data));
+		return array();
+	}
+
+	/**
+	 * Returns an array of threads in the forum
+	 *
+	 * @param  $parent
+	 * @param  $parentId
+	 * @return void
+	 */
+	protected function _getThreads($parent, $forumId)
+	{
+		/**	@var $ftpHelper XenForo_ControllerHelper_ForumThreadPost */
+		$ftpHelper = $this->getHelper('ForumThreadPost');
+		$forum = $ftpHelper->assertForumValidAndViewable($forumId);
+		$visitor = XenForo_Visitor::getInstance();
+
+		$threadModel = $this->_getThreadModel();
+
+		$page = max(1, $this->getParam('page'));
+		// TODO: Param
+		$threadsPerPage = XenForo_Application::get('options')->discussionsPerPage;
+
+		// TODO: Params
+		$order = 'last_post_date';
+		$orderDirection = 'desc';
+
+		// fetch all thread info
+		$threadFetchConditions = $threadModel->getPermissionBasedThreadFetchConditions($forum) + array(
+			'sticky' => 0
+		);
+		$threadFetchOptions = array(
+			'perPage' => $threadsPerPage,
+			'page' => $page,
+
+			'join' => XenForo_Model_Thread::FETCH_USER,
+			'readUserId' => $visitor['user_id'],
+			'postCountUserId' => $visitor['user_id'],
+
+			'order' => $order,
+			'orderDirection' => $orderDirection
+		);
+
+		$threads = $threadModel->getThreadsInForum($forumId, $threadFetchConditions, $threadFetchOptions);
+
+		// TODO: Sticky threads
+
+		$threadList = array();
+
+		foreach ($threads AS $thread)
+		{
+			$threadList[] = $this->_cloneData($thread, array(
+				'thread_id', 'node_id', 'title', 'reply_count', 'view_count',
+				'user_id', 'username', 'post_date', 'discussion_open', 'last_post_date',
+				'last_post_id', 'last_post_user_id', 'last_post_username'
+			));
+		}
+
+		return array(
+			'threads' => $threadList
+		);
 	}
 
 	protected function _buildForumList(array $nodesGrouped, $parentId)
@@ -80,6 +159,14 @@ class XenApi_ControllerApi_Forum extends XenApi_ControllerApi_Abstract
 		return $this->getModelFromCache('XenForo_Model_Forum');
 	}
 
+	/**
+	 * @return XenForo_Model_Thread
+	 */
+	protected function _getThreadModel()
+	{
+		return $this->getModelFromCache('XenForo_Model_Thread');
+	}
+
     /**
 	 * @return XenForo_Model_Node
 	 */
@@ -91,7 +178,10 @@ class XenApi_ControllerApi_Forum extends XenApi_ControllerApi_Abstract
 	protected function _getParams()
 	{
 		return array(
-			'node_id' => XenForo_Input::UINT
+			'node_id' => XenForo_Input::UINT,
+			'no_forums' => false,
+			'no_threads' => false,
+			'page' => XenForo_Input::UINT
 		);
 	}
 }

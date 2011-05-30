@@ -33,7 +33,7 @@ abstract class XenApi_ControllerApi_Abstract extends XenForo_Controller
 	 */
 	public function responseNoPermission()
 	{
-		// TODO: Implement responseNoPermission() method.
+		return $this->responseApiError('You do not have permission to view this page or perform this action', 'no_permission', 403);
 	}
 
 	/**
@@ -185,7 +185,7 @@ abstract class XenApi_ControllerApi_Abstract extends XenForo_Controller
 	 * @param  $cleanedParams
 	 * @return array
 	 */
-	protected function _handleMultiParam($paramName, $paramOptions, $cleanedParams)
+	private function _handleMultiParam($paramName, $paramOptions, $cleanedParams)
 	{
 		$values = explode('|', $cleanedParams[$paramName]);
 		$allowedValues = isset($paramOptions['values']) ? $paramOptions['values'] : null;
