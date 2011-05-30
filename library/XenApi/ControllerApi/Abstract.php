@@ -175,10 +175,19 @@ abstract class XenApi_ControllerApi_Abstract extends XenForo_Controller
 				continue;
 			}
 
+			$value = $cleanedParams[$paramName];
+
 			if (isset($paramOptions['multi']) || isset($paramOptions['values']))
 			{
-				$cleanedParams[$paramName] = $this->_handleMultiParam($paramName, $paramOptions, $cleanedParams);
+				$value = $this->_handleMultiParam($paramName, $paramOptions, $value);
 			}
+
+			if (isset($paramOptions['min']) || isset($paramOptions['max']))
+			{
+				$value = $this->_handleRangeParam($paramName, $paramOptions, $value);
+			}
+
+			$cleanedParams[$paramName] = $value;
 		}
 
 		$this->_params = $cleanedParams;
@@ -193,9 +202,9 @@ abstract class XenApi_ControllerApi_Abstract extends XenForo_Controller
 	 * @param  $cleanedParams
 	 * @return array
 	 */
-	private function _handleMultiParam($paramName, $paramOptions, $cleanedParams)
+	private function _handleMultiParam($paramName, $paramOptions, $value)
 	{
-		$values = explode('|', $cleanedParams[$paramName]);
+		$values = explode('|', $value);
 		$allowedValues = isset($paramOptions['values']) ? $paramOptions['values'] : null;
 		$allowMultiple = isset($paramOptions['multi']) ? $paramOptions['multi'] : false;
 
@@ -231,6 +240,65 @@ abstract class XenApi_ControllerApi_Abstract extends XenForo_Controller
 		}
 
 		return ($allowMultiple) ? $values : $values[0];
+	}
+
+	/**
+	 * Verifies that integers are in range
+	 *
+	 * @param  $paramName
+	 * @param  $paramOptions
+	 * @param  $value
+	 * @return
+	 */
+	private function _handleRangeParam($paramName, $paramOptions, $value)
+	{
+		$filterType = $paramOptions[0];
+
+		if ($filterType != XenForo_Input::INT && $filterType != XenForo_Input::UINT)
+		{
+			throw new XenForo_Exception("Invalid filter type mixed with a range limit (param $paramName)");
+		}
+
+		$min = isset($paramOptions['min']) ? $paramOptions['min'] : null;
+		$max = isset($paramOptions['max']) ? $paramOptions['max'] : null;
+
+		if (is_array($value))
+		{
+			foreach ($value AS &$v)
+			{
+				$this->_validateLimit($paramName, $v, $min, $max);
+			}
+		}
+		else
+		{
+			$this->_validateLimit($paramName, $value, $min, $max);
+		}
+
+		return $value;
+	}
+
+	/**
+	 * Helper function for _handleRangeParam
+	 *
+	 * @param  $paramName
+	 * @param  $value
+	 * @param  $min
+	 * @param  $max
+	 * @return void
+	 */
+	private function _validateLimit($paramName, &$value, $min, $max)
+	{
+		if ($min !== null && $value < $min)
+		{
+			$this->_addWarning("$paramName may not be less than $min (set to $value)");
+			$value = $min;
+		}
+
+		if ($max !== null && $value > $max)
+		{
+			$this->_addWarning("$paramName may not be over $max (set to $value)");
+			$value = $max;
+		}
 	}
 
 	/**
