@@ -91,7 +91,7 @@ abstract class XenApi_ControllerApi_Abstract extends XenForo_Controller
 	protected function _preDispatchType($action)
 	{
 		$this->_assertBoardActive($action);
-		$this->_handleParams();
+		$this->_handleParams($action);
 	}
 
 	/**
@@ -124,14 +124,22 @@ abstract class XenApi_ControllerApi_Abstract extends XenForo_Controller
 	 * @throws XenForo_ControllerResponse_Exception
 	 * @return
 	 */
-	private function _handleParams()
+	private function _handleParams($currentAction)
 	{
-		$cleanedParams = array();
-		$params = $this->_getParams();
+		$cleanedParams = $params = array();
+		$paramsList = $this->_getParams();
 
-		if ($params === false)
+		if ($paramsList === false)
 		{
 			return;
+		}
+
+		foreach ($paramsList AS $action => $actionParams)
+		{
+			if ($action == '*' || $action == $currentAction)
+			{
+				$params += $actionParams;
+			}
 		}
 
 		foreach ($params AS $paramName => $paramOptions)

@@ -178,10 +178,12 @@ class XenApi_ControllerApi_Forum extends XenApi_ControllerApi_Abstract
 	protected function _getParams()
 	{
 		return array(
-			'node_id' => XenForo_Input::UINT,
-			'no_forums' => false,
-			'no_threads' => false,
-			'page' => XenForo_Input::UINT
+			'*' => array(
+				'node_id' => XenForo_Input::UINT,
+				'no_forums' => false,
+				'no_threads' => false,
+				'page' => XenForo_Input::UINT
+			)
 		);
 	}
 }

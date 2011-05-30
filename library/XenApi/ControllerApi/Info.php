@@ -88,17 +88,19 @@ class XenApi_ControllerApi_Info extends XenApi_ControllerApi_Abstract
 	protected function _getParams()
 	{
 		return array(
-			'properties' => array(
-				XenForo_Input::STRING,
-				'default' => 'general',
-				'multi' => true,
-				'values' => array(
-					'general',
-					'statistics',
-					'onlineusers'
-				)
-			),
-			'nouserlist' => false
+			'*' => array(
+				'properties' => array(
+					XenForo_Input::STRING,
+					'default' => 'general',
+					'multi' => true,
+					'values' => array(
+						'general',
+						'statistics',
+						'onlineusers'
+					)
+				),
+				'nouserlist' => false
+			)
 		);
 	}
 }
