@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<addon addon_id="xenapi" title="XenAPI" version_string="Alpha" version_id="0" url="" install_callback_class="" install_callback_method="" uninstall_callback_class="" uninstall_callback_method="">
+  <admin_navigation/>
+  <admin_permissions/>
+  <admin_style_properties/>
+  <admin_templates/>
+  <code_events/>
+  <code_event_listeners>
+    <listener event_id="front_controller_post_view" execute_order="10" callback_class="XenApi_CodeEventListener" callback_method="FrontControllerPostView" active="1" description="Replaces the output with the real data from the view renderer"/>
+    <listener event_id="front_controller_pre_route" execute_order="10" callback_class="XenApi_CodeEventListener" callback_method="FrontControllerPreRoute" active="1" description="Checks to see if it's an API request"/>
+    <listener event_id="front_controller_pre_view" execute_order="10" callback_class="XenApi_CodeEventListener" callback_method="FrontControllerPreView" active="1" description="Handles rendering of API responses"/>
+  </code_event_listeners>
+  <cron/>
+  <email_templates/>
+  <optiongroups/>
+  <permissions>
+    <permission_groups/>
+    <permissions/>
+    <interface_groups/>
+  </permissions>
+  <phrases/>
+  <route_prefixes/>
+  <style_properties/>
+  <templates/>
+</addon>
