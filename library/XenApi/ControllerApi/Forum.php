@@ -74,12 +74,10 @@ class XenApi_ControllerApi_Forum extends XenApi_ControllerApi_Abstract
 		$threadModel = $this->_getThreadModel();
 
 		$page = max(1, $this->getParam('page'));
-		// TODO: Param
-		$threadsPerPage = XenForo_Application::get('options')->discussionsPerPage;
+		$threadsPerPage = $this->getParam('per_page');
 
-		// TODO: Params
-		$order = 'last_post_date';
-		$orderDirection = 'desc';
+		$order = $this->getParam('order');
+		$orderDirection = $this->getParam('order_direction');
 
 		// fetch all thread info
 		$threadFetchConditions = $threadModel->getPermissionBasedThreadFetchConditions($forum) + array(
@@ -182,7 +180,30 @@ class XenApi_ControllerApi_Forum extends XenApi_ControllerApi_Abstract
 				'node_id' => XenForo_Input::UINT,
 				'no_forums' => false,
 				'no_threads' => false,
-				'page' => XenForo_Input::UINT
+				'page' => XenForo_Input::UINT,
+				'per_page' => array(
+					XenForo_Input::UINT,
+					'default' => XenForo_Application::get('options')->discussionsPerPage,
+					'min' => 1,
+					'max' => 200
+				),
+				'order' => array(
+					XenForo_Input::STRING,
+					'default' => 'last_post_date',
+					'values' => array(
+						'title',
+						'post_date',
+						'view_count',
+						'reply_count',
+						'first_post_likes',
+						'last_post_date'
+					)
+				),
+				'order_direction' => array(
+					XenForo_Input::STRING,
+					'default' => 'desc',
+					'values' => array('desc', 'asc')
+				)
 			)
 		);
 	}
